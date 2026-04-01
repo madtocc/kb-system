@@ -1,6 +1,6 @@
 # KB System — Knowledge Graph for AI-Driven Development
 
-Markdown files in a graph structure. Human readable, AI native. Break work into small stories, generate focused CLAUDE.md files, ship.
+Markdown files in a graph structure. Human readable, AI native. Break work into small stories, generate focused working-context files, ship.
 
 ## Install
 
@@ -10,7 +10,9 @@ Markdown files in a graph structure. Human readable, AI native. Break work into 
 bash install.sh --global
 ```
 
-Commands become available as `/user:kb-*` in any project:
+Claude Code gets slash commands and Codex gets skills in any project.
+
+### Claude Code
 
 | Command | What it does |
 |---|---|
@@ -19,29 +21,64 @@ Commands become available as `/user:kb-*` in any project:
 | `/user:kb-gen STORY-003` | Generate CLAUDE.md pulling only relevant knowledge |
 | `/user:kb-learn We use cursor pagination` | Update knowledge nodes from discoveries |
 
+### Codex
+
+Invoke the same workflows as skills:
+
+| Skill | What it does |
+|---|---|
+| `$kb-init-knowledge-graph` | Scan codebase and bootstrap knowledge graph |
+| `$kb-new-story Add profile editing` | Create a scoped story with knowledge references |
+| `$kb-gen STORY-003` | Generate WORKING_SET.md pulling only relevant knowledge |
+| `$kb-learn We use cursor pagination` | Update knowledge nodes from discoveries |
+
 ### Per-project
 
 ```bash
 bash install.sh
 ```
 
-Same commands, available as `/project:*` instead.
+This installs:
+- `.claude/commands/` for Claude Code
+- `.agents/skills/` for Codex
+- `.kb/scripts/` for both
+
+Claude commands are available as `/project:*`. Codex skills are available in the repo via `$kb-*` and, in the Codex app, appear in the slash-command list as well.
 
 ## Workflow
 
 ### First time (once per project)
 
+#### Claude Code
+
 1. Open Claude Code in your project
 2. Run `/user:kb-init-knowledge-graph`
 3. Claude scans your codebase and generates `.knowledge/` nodes automatically
 
+#### Codex
+
+1. Open Codex in your project
+2. Run `$kb-init-knowledge-graph`
+3. Codex scans your codebase and generates `.knowledge/` nodes automatically
+
 ### Daily loop
 
+#### Claude Code
+
+```text
+/user:kb-new-story <description>   -> create a scoped story
+/user:kb-gen STORY-NNN             -> generate focused CLAUDE.md
+"Work on the tasks in CLAUDE.md"   -> code with focused context
+/user:kb-learn <insight>           -> optional: capture what you learned
 ```
-/user:kb-new-story <description>   → create a scoped story
-/user:kb-gen STORY-NNN             → generate focused CLAUDE.md
-"Work on the tasks in CLAUDE.md"   → code with focused context
-/user:kb-learn <insight>           → optional: capture what you learned
+
+#### Codex
+
+```text
+$kb-new-story <description>        -> create a scoped story
+$kb-gen STORY-NNN                  -> generate focused WORKING_SET.md
+"Work on the tasks in WORKING_SET.md" -> code with focused context
+$kb-learn <insight>                -> optional: capture what you learned
 ```
 
 Start a fresh session per story for the cleanest context.
@@ -65,15 +102,16 @@ Every knowledge node links to related nodes via standard markdown links. The gen
 
 ## Why This Works
 
-Small stories (1-3 hours) mean each CLAUDE.md only needs 5-8 knowledge nodes (~500-1500 tokens). Context stays focused, which is where LLMs perform best. You ship piece by piece instead of trying to cram everything into one massive prompt.
+Small stories (1-3 hours) mean each working-context file only needs 5-8 knowledge nodes (~500-1500 tokens). Context stays focused, which is where LLMs perform best. You ship piece by piece instead of trying to cram everything into one massive prompt.
 
-The knowledge base grows with your project. Every time you learn something, `/user:kb-learn` captures it. Every new story benefits from everything you've learned before.
+The knowledge base grows with your project. Every time you learn something, `kb-learn` captures it. Every new story benefits from everything you've learned before.
 
 ## Add to .gitignore
 
 ```
 # Generated — regenerate per story
 CLAUDE.md
+WORKING_SET.md
 ```
 
 Commit everything else (`.knowledge/`, `.backlog/`).

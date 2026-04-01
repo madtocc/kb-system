@@ -3,6 +3,6 @@
 import { runGenerateContextCli } from "./generate-context-md.mjs";
 
 runGenerateContextCli(process.argv.slice(2), {
-  defaultOutputPath: "CLAUDE.md",
-  usageScript: ".kb/scripts/generate-claude-md.mjs",
+  defaultOutputPath: "WORKING_SET.md",
+  usageScript: ".kb/scripts/generate-working-set-md.mjs",
 });
