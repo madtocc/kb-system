@@ -4,13 +4,27 @@ Markdown files in a graph structure. Human readable, AI native. Break work into 
 
 ## Install
 
-### Global (recommended — available in any project)
+Run a single installer and either answer the prompts or pass flags.
+
+### Interactive
 
 ```bash
-bash install.sh --global
+bash install.sh
 ```
 
-Claude Code gets slash commands and Codex gets skills in any project.
+The installer will ask:
+- local or global install
+- Claude, Codex, or both
+
+### Non-interactive examples
+
+```bash
+bash install.sh --local --claude
+bash install.sh --local --codex
+bash install.sh --local --codex --path ~/code/my-project
+bash install.sh --global --claude --codex
+bash install.sh --scope global --targets claude,codex
+```
 
 ### Claude Code
 
@@ -34,16 +48,19 @@ Invoke the same workflows as skills:
 
 ### Per-project
 
-```bash
-bash install.sh
-```
-
-This installs:
+Local install adds:
 - `.claude/commands/` for Claude Code
 - `.agents/skills/` for Codex
 - `.kb/scripts/` for both
 
 Claude commands are available as `/project:*`. Codex skills are available in the repo via `$kb-*` and, in the Codex app, appear in the slash-command list as well.
+
+Global install adds:
+- `~/.claude/commands/` for Claude Code
+- `~/.agents/skills/` for Codex
+- `~/.kb/scripts/` for shared generator scripts
+
+If you choose `local`, the installer defaults to the current directory. You can override that with `--path /absolute/or/relative/project-path`.
 
 ## Workflow
 
