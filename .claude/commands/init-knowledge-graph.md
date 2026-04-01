@@ -37,6 +37,7 @@ Based on the scan results, create these knowledge nodes. Each file should be 50-
 **`.knowledge/workflows/testing.md`**
 - Infer from: test files, jest/vitest config, CI pipeline
 - Include: test strategy, file naming, frameworks used, coverage expectations
+- **Must include**: the exact command to run tests (e.g., `npm test`, `pytest`, `go test ./...`), and the command to run a single test file if supported
 
 **`.knowledge/workflows/deploy.md`**
 - Infer from: CI/CD configs, Dockerfile, vercel.json, scripts in package.json

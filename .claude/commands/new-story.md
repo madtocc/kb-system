@@ -22,7 +22,7 @@ Increment the number (e.g., STORY-003 → STORY-004).
 ls -R .knowledge/
 ```
 
-3. Determine which knowledge nodes are relevant to this story. Pick 3-7 nodes max. Always include `code-style.md` and `architecture.md` if they exist.
+3. Determine which knowledge nodes are relevant to this story. Pick 3-7 nodes max. Always include `code-style.md`, `architecture.md`, and `workflows/testing.md` if they exist.
 
 4. Find or create an appropriate epic. If none fits, create a new one.
 
