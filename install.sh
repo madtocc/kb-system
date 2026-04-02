@@ -6,12 +6,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KB_HOME="$HOME/.kb"
 CLAUDE_COMMANDS="$HOME/.claude/commands"
 CODEX_SKILLS="$HOME/.agents/skills"
+GH_PROMPTS="$HOME/.github/prompts"
 
 SCOPE=""
 INSTALL_PATH=""
 TARGETS_SET=0
 INSTALL_CLAUDE=0
 INSTALL_CODEX=0
+INSTALL_GH=0
 
 usage() {
   cat <<'EOF'
@@ -19,15 +21,16 @@ KB System installer
 
 Usage:
   bash install.sh
-  bash install.sh --local|--global [--claude] [--codex] [--path /target/project]
-  bash install.sh --scope local|global --targets claude|codex|claude,codex
+  bash install.sh --local|--global [--claude] [--codex] [--gh] [--path /target/project]
+  bash install.sh --scope local|global --targets claude|codex|gh|claude,codex,gh
 
 Examples:
   bash install.sh
   bash install.sh --local --claude
   bash install.sh --local --codex --path ~/code/my-project
+  bash install.sh --local --gh
   bash install.sh --global --codex
-  bash install.sh --scope global --targets claude,codex
+  bash install.sh --scope global --targets claude,codex,gh
 
 If you run without flags in an interactive terminal, the installer will ask what to install.
 `--path` only applies to local installs. If omitted, local install defaults to the current directory.
@@ -42,11 +45,17 @@ set_targets() {
   TARGETS_SET=1
   INSTALL_CLAUDE=0
   INSTALL_CODEX=0
+  INSTALL_GH=0
 
   IFS=',' read -r -a parts <<< "$normalized"
   for part in "${parts[@]}"; do
     case "$part" in
-      all|both|claude+codex|codex+claude)
+      all)
+        INSTALL_CLAUDE=1
+        INSTALL_CODEX=1
+        INSTALL_GH=1
+        ;;
+      both|claude+codex|codex+claude)
         INSTALL_CLAUDE=1
         INSTALL_CODEX=1
         ;;
@@ -55,6 +64,9 @@ set_targets() {
         ;;
       codex)
         INSTALL_CODEX=1
+        ;;
+      gh|github)
+        INSTALL_GH=1
         ;;
       "")
         ;;
@@ -66,7 +78,7 @@ set_targets() {
     esac
   done
 
-  if [ "$INSTALL_CLAUDE" -eq 0 ] && [ "$INSTALL_CODEX" -eq 0 ]; then
+  if [ "$INSTALL_CLAUDE" -eq 0 ] && [ "$INSTALL_CODEX" -eq 0 ] && [ "$INSTALL_GH" -eq 0 ]; then
     echo "At least one target must be selected." >&2
     usage
     exit 1
@@ -130,6 +142,11 @@ parse_args() {
         INSTALL_CODEX=1
         shift
         ;;
+      --gh|--github)
+        TARGETS_SET=1
+        INSTALL_GH=1
+        shift
+        ;;
       -h|--help)
         usage
         exit 0
@@ -166,21 +183,37 @@ prompt_scope() {
 
 prompt_targets() {
   echo "Choose target runtime:"
-  echo "  1) Claude + Codex"
+  echo "  1) Claude + Codex + GitHub Copilot"
   echo "  2) Claude only"
   echo "  3) Codex only"
-  printf "Enter choice [1-3]: "
+  echo "  4) GitHub Copilot only"
+  echo "  5) Claude + Codex"
+  echo "  6) Claude + GitHub Copilot"
+  echo "  7) Codex + GitHub Copilot"
+  printf "Enter choice [1-7]: "
   read -r choice
 
   case "$choice" in
     1|"")
-      set_targets "claude,codex"
+      set_targets "claude,codex,gh"
       ;;
     2)
       set_targets "claude"
       ;;
     3)
       set_targets "codex"
+      ;;
+    4)
+      set_targets "gh"
+      ;;
+    5)
+      set_targets "claude,codex"
+      ;;
+    6)
+      set_targets "claude,gh"
+      ;;
+    7)
+      set_targets "codex,gh"
       ;;
     *)
       echo "Invalid choice: $choice" >&2
@@ -214,8 +247,8 @@ resolve_defaults() {
     if [ -t 0 ]; then
       prompt_targets
     else
-      set_targets "claude,codex"
-      echo "No targets specified and no interactive terminal detected. Defaulting to Claude + Codex."
+      set_targets "claude,codex,gh"
+      echo "No targets specified and no interactive terminal detected. Defaulting to Claude + Codex + GitHub Copilot."
     fi
   fi
 
@@ -270,6 +303,7 @@ copy_scripts() {
   cp "$SCRIPT_DIR/.kb/scripts/generate-context-md.mjs" "$destination/generate-context-md.mjs"
   cp "$SCRIPT_DIR/.kb/scripts/generate-claude-md.mjs" "$destination/generate-claude-md.mjs"
   cp "$SCRIPT_DIR/.kb/scripts/generate-working-set-md.mjs" "$destination/generate-working-set-md.mjs"
+  cp "$SCRIPT_DIR/.kb/scripts/generate-copilot-md.mjs" "$destination/generate-copilot-md.mjs"
   chmod +x "$destination/"*.mjs
 }
 
@@ -306,6 +340,25 @@ install_codex_global() {
   cp -R "$SCRIPT_DIR/.agents/skills/." "$CODEX_SKILLS/"
 }
 
+install_gh_local() {
+  local target_dir="$1"
+  mkdir -p "$target_dir/.github/prompts"
+  cp "$SCRIPT_DIR/.github/prompts/"kb-*.prompt.md "$target_dir/.github/prompts/"
+}
+
+install_gh_global() {
+  mkdir -p "$GH_PROMPTS"
+
+  for prompt in kb-init-knowledge-graph kb-gen kb-new-story kb-learn; do
+    sed \
+      -e "s|\\.kb/scripts/|$KB_HOME/scripts/|g" \
+      -e "s|node \\.kb/|node $KB_HOME/|g" \
+      -e "s|node ~/|node $HOME/|g" \
+      -e "s|~|$HOME|g" \
+      "$SCRIPT_DIR/.github/prompts/$prompt.prompt.md" > "$GH_PROMPTS/$prompt.prompt.md"
+  done
+}
+
 install_local() {
   local target_dir
   target_dir="$(resolve_local_path "$INSTALL_PATH")"
@@ -331,6 +384,10 @@ install_local() {
     install_codex_local "$target_dir"
   fi
 
+  if [ "$INSTALL_GH" -eq 1 ]; then
+    install_gh_local "$target_dir"
+  fi
+
   echo "✅ Installed locally:"
   echo "   Target: $target_dir"
   echo "   .knowledge/      — your knowledge graph (empty, ready to fill)"
@@ -341,6 +398,9 @@ install_local() {
   fi
   if [ "$INSTALL_CODEX" -eq 1 ]; then
     echo "   .agents/skills/  — Codex skills"
+  fi
+  if [ "$INSTALL_GH" -eq 1 ]; then
+    echo "   .github/prompts/ — GitHub Copilot prompt files"
   fi
   echo ""
   echo "🚀 Next steps:"
@@ -356,6 +416,13 @@ install_local() {
     echo "     1. Open Codex in: $target_dir"
     echo "     2. Run: \$kb-init-knowledge-graph"
     echo "     3. Codex will scan your project and bootstrap the knowledge graph"
+    echo ""
+  fi
+  if [ "$INSTALL_GH" -eq 1 ]; then
+    echo "   GitHub Copilot:"
+    echo "     1. Open VS Code / GitHub Copilot in: $target_dir"
+    echo "     2. Use prompt: kb-init-knowledge-graph"
+    echo "     3. Copilot will scan your project and bootstrap the knowledge graph"
     echo ""
   fi
   echo "💡 Tip: run 'bash install.sh --global' to install reusable assets for all projects"
@@ -375,6 +442,10 @@ install_global() {
     install_codex_global
   fi
 
+  if [ "$INSTALL_GH" -eq 1 ]; then
+    install_gh_global
+  fi
+
   echo "✅ Installed globally:"
   echo "   $KB_HOME/scripts/ — scanner + context generators"
   if [ "$INSTALL_CLAUDE" -eq 1 ]; then
@@ -382,6 +453,9 @@ install_global() {
   fi
   if [ "$INSTALL_CODEX" -eq 1 ]; then
     echo "   $CODEX_SKILLS/ — Codex skills"
+  fi
+  if [ "$INSTALL_GH" -eq 1 ]; then
+    echo "   $GH_PROMPTS/ — GitHub Copilot prompt files"
   fi
   echo ""
   echo "📋 Available globally:"
@@ -396,6 +470,12 @@ install_global() {
     echo "   \$kb-new-story"
     echo "   \$kb-gen STORY-001"
     echo "   \$kb-learn"
+  fi
+  if [ "$INSTALL_GH" -eq 1 ]; then
+    echo "   kb-init-knowledge-graph (prompt file)"
+    echo "   kb-new-story (prompt file)"
+    echo "   kb-gen (prompt file)"
+    echo "   kb-learn (prompt file)"
   fi
 }
 

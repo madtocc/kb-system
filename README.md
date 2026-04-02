@@ -14,16 +14,17 @@ bash install.sh
 
 The installer will ask:
 - local or global install
-- Claude, Codex, or both
+- Claude, Codex, GitHub Copilot, or any combination
 
 ### Non-interactive examples
 
 ```bash
 bash install.sh --local --claude
 bash install.sh --local --codex
+bash install.sh --local --gh
 bash install.sh --local --codex --path ~/code/my-project
-bash install.sh --global --claude --codex
-bash install.sh --scope global --targets claude,codex
+bash install.sh --global --claude --codex --gh
+bash install.sh --scope global --targets claude,codex,gh
 ```
 
 ### Claude Code
@@ -46,18 +47,31 @@ Invoke the same workflows as skills:
 | `$kb-gen STORY-003` | Generate WORKING_SET.md pulling only relevant knowledge |
 | `$kb-learn We use cursor pagination` | Update knowledge nodes from discoveries |
 
+### GitHub Copilot
+
+Invoke via prompt files in VS Code or any GitHub Copilot-enabled editor:
+
+| Prompt file | What it does |
+|---|---|
+| `kb-init-knowledge-graph` | Scan codebase and bootstrap knowledge graph |
+| `kb-new-story Add profile editing` | Create a scoped story with knowledge references |
+| `kb-gen STORY-003` | Generate COPILOT.md pulling only relevant knowledge |
+| `kb-learn We use cursor pagination` | Update knowledge nodes from discoveries |
+
 ### Per-project
 
 Local install adds:
 - `.claude/commands/` for Claude Code
 - `.agents/skills/` for Codex
-- `.kb/scripts/` for both
+- `.github/prompts/` for GitHub Copilot
+- `.kb/scripts/` for all
 
-Claude commands are available as `/project:*`. Codex skills are available in the repo via `$kb-*` and, in the Codex app, appear in the slash-command list as well.
+Claude commands are available as `/project:*`. Codex skills are available in the repo via `$kb-*` and, in the Codex app, appear in the slash-command list as well. GitHub Copilot prompt files are available in VS Code via the prompt file picker.
 
 Global install adds:
 - `~/.claude/commands/` for Claude Code
 - `~/.agents/skills/` for Codex
+- `~/.github/prompts/` for GitHub Copilot
 - `~/.kb/scripts/` for shared generator scripts
 
 If you choose `local`, the installer defaults to the current directory. You can override that with `--path /absolute/or/relative/project-path`.
@@ -78,6 +92,12 @@ If you choose `local`, the installer defaults to the current directory. You can 
 2. Run `$kb-init-knowledge-graph`
 3. Codex scans your codebase and generates `.knowledge/` nodes automatically
 
+#### GitHub Copilot
+
+1. Open VS Code in your project
+2. Use prompt file `kb-init-knowledge-graph`
+3. Copilot scans your codebase and generates `.knowledge/` nodes automatically
+
 ### Daily loop
 
 #### Claude Code
@@ -96,6 +116,15 @@ $kb-new-story <description>        -> create a scoped story
 $kb-gen STORY-NNN                  -> generate focused WORKING_SET.md
 "Work on the tasks in WORKING_SET.md" -> code with focused context
 $kb-learn <insight>                -> optional: capture what you learned
+```
+
+#### GitHub Copilot
+
+```text
+kb-new-story <description>         -> create a scoped story
+kb-gen STORY-NNN                   -> generate focused COPILOT.md
+"Work on the tasks in COPILOT.md"  -> code with focused context
+kb-learn <insight>                 -> optional: capture what you learned
 ```
 
 Start a fresh session per story for the cleanest context.
@@ -129,6 +158,7 @@ The knowledge base grows with your project. Every time you learn something, `kb-
 # Generated — regenerate per story
 CLAUDE.md
 WORKING_SET.md
+COPILOT.md
 ```
 
 Commit everything else (`.knowledge/`, `.backlog/`).
