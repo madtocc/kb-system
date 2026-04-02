@@ -49,6 +49,8 @@ node .kb/scripts/scan-project.mjs
 node .kb/scripts/generate-copilot-md.mjs .backlog/stories/STORY-001-example.md
 ```
 
+This writes to `.github/copilot-instructions.md` so Copilot picks it up automatically.
+
 8. End with a short summary:
    - what was detected directly
    - what was inferred

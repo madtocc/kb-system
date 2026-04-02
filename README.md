@@ -55,7 +55,7 @@ Invoke via prompt files in VS Code or any GitHub Copilot-enabled editor:
 |---|---|
 | `kb-init-knowledge-graph` | Scan codebase and bootstrap knowledge graph |
 | `kb-new-story Add profile editing` | Create a scoped story with knowledge references |
-| `kb-gen STORY-003` | Generate COPILOT.md pulling only relevant knowledge |
+| `kb-gen STORY-003` | Generate `.github/copilot-instructions.md` pulling only relevant knowledge |
 | `kb-learn We use cursor pagination` | Update knowledge nodes from discoveries |
 
 ### Per-project
@@ -122,8 +122,8 @@ $kb-learn <insight>                -> optional: capture what you learned
 
 ```text
 kb-new-story <description>         -> create a scoped story
-kb-gen STORY-NNN                   -> generate focused COPILOT.md
-"Work on the tasks in COPILOT.md"  -> code with focused context
+kb-gen STORY-NNN                   -> generate focused .github/copilot-instructions.md
+"Work on the story"                -> code with auto-loaded context
 kb-learn <insight>                 -> optional: capture what you learned
 ```
 
@@ -158,7 +158,7 @@ The knowledge base grows with your project. Every time you learn something, `kb-
 # Generated — regenerate per story
 CLAUDE.md
 WORKING_SET.md
-COPILOT.md
+.github/copilot-instructions.md
 ```
 
 Commit everything else (`.knowledge/`, `.backlog/`).
