@@ -36,6 +36,14 @@ node .kb/scripts/generate-copilot-md.mjs <story-path-or-id>
 6. If the user asked to implement the story, continue the task using `.github/copilot-instructions.md` as the scoped context. Do not widen scope unless the story itself requires it.
 7. If the user only asked to prepare context, stop after generation and report the story title plus any problems you found.
 
+## On story completion
+
+When the story's acceptance criteria are met and the work is done:
+
+1. Review the changes made during implementation for new conventions, architecture decisions, or domain facts worth capturing.
+2. Automatically run the `kb-learn` workflow for each durable discovery — do not ask the user to run it manually.
+3. Skip anything temporary, debugging-only, or already captured in the knowledge graph.
+
 ## Guardrails
 
 - Treat the story and inlined knowledge as the working contract for the task.

@@ -29,3 +29,11 @@ node .kb/scripts/generate-claude-md.mjs .backlog/stories/<matched-file>
 4. If any knowledge nodes referenced in the story don't exist, warn the user and offer to create stubs.
 
 5. Print: "CLAUDE.md generated. Ready to work on: {story title}"
+
+## On story completion
+
+When the story's acceptance criteria are met and the work is done:
+
+1. Review the changes made during implementation for new conventions, architecture decisions, or domain facts worth capturing.
+2. Automatically update the knowledge graph following the `learn` workflow for each durable discovery — do not wait for the user to run it manually.
+3. Skip anything temporary, debugging-only, or already captured in the knowledge graph.

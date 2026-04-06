@@ -106,7 +106,7 @@ If you choose `local`, the installer defaults to the current directory. You can 
 /user:kb-new-story <description>   -> create a scoped story
 /user:kb-gen STORY-NNN             -> generate focused CLAUDE.md
 "Work on the tasks in CLAUDE.md"   -> code with focused context
-/user:kb-learn <insight>           -> optional: capture what you learned
+                                      knowledge is updated automatically on completion
 ```
 
 #### Codex
@@ -115,7 +115,7 @@ If you choose `local`, the installer defaults to the current directory. You can 
 $kb-new-story <description>        -> create a scoped story
 $kb-gen STORY-NNN                  -> generate focused WORKING_SET.md
 "Work on the tasks in WORKING_SET.md" -> code with focused context
-$kb-learn <insight>                -> optional: capture what you learned
+                                      knowledge is updated automatically on completion
 ```
 
 #### GitHub Copilot
@@ -124,7 +124,7 @@ $kb-learn <insight>                -> optional: capture what you learned
 kb-new-story <description>         -> create a scoped story
 kb-gen STORY-NNN                   -> generate focused .github/copilot-instructions.md
 "Work on the story"                -> code with auto-loaded context
-kb-learn <insight>                 -> optional: capture what you learned
+                                      knowledge is updated automatically on completion
 ```
 
 Start a fresh session per story for the cleanest context.
