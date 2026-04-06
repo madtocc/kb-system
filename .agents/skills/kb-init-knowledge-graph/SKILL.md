@@ -49,4 +49,4 @@ Initialize the KB System for the current project by scanning the repository, cre
 - Keep knowledge nodes factual and repo-specific.
 - Prefer explicit commands, file paths, and conventions over broad summaries.
 - If the scan is ambiguous, say so instead of pretending certainty.
-- Keep the story small enough for roughly 1-3 hours of work.
+- If a story is large, split it into multiple focused stories.

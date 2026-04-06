@@ -50,7 +50,7 @@ Create a new story file under `.backlog/stories/` that is small, testable, and l
 
 ## Guardrails
 
-- Keep the story small. If it looks larger than 1-3 hours, split it before writing.
+- If a story is large, split it into multiple focused stories rather than forcing everything into one.
 - Tasks should describe implementation work, not vague goals.
 - Acceptance criteria must be testable.
 - Scope boundaries should be explicit so the story stays focused.

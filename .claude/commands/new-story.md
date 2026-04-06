@@ -58,6 +58,6 @@ ls -R .knowledge/
 - {Defer to future stories}
 ```
 
-6. Keep the story small. If the user's description implies more than 3 hours of work, suggest splitting into multiple stories and ask which one to start with.
+6. If the user's description implies a large task, suggest splitting into multiple focused stories and ask which one to start with.
 
 7. After creating the story, ask: "Want me to generate the CLAUDE.md for this story now?"

@@ -141,14 +141,14 @@ Start a fresh session per story for the cleanest context.
 
 .backlog/            ← work breakdown
   epics/             ← groups of related stories
-  stories/           ← small units of work (1-3 hours each)
+  stories/           ← units of work (split large ones into sub-stories)
 ```
 
 Every knowledge node links to related nodes via standard markdown links. The generator follows these links one hop deep, so related context gets pulled in automatically.
 
 ## Why This Works
 
-Small stories (1-3 hours) mean each working-context file only needs 5-8 knowledge nodes (~500-1500 tokens). Context stays focused, which is where LLMs perform best. You ship piece by piece instead of trying to cram everything into one massive prompt.
+Focused stories mean each working-context file only needs 5-8 knowledge nodes (~500-1500 tokens). Context stays focused, which is where LLMs perform best. Large tasks get split into multiple stories so you ship piece by piece instead of trying to cram everything into one massive prompt.
 
 The knowledge base grows with your project. Every time you learn something, `kb-learn` captures it. Every new story benefits from everything you've learned before.
 
